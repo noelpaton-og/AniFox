@@ -2,16 +2,13 @@ const axios = require("axios");
 
 exports.handler = async (event) => {
   try {
-    const query = event.queryStringParameters?.query;
-    const page = event.queryStringParameters?.page || 1;
+    const { query, page = 1 } = event.queryStringParameters || {};
 
     if (!query) {
       return {
         statusCode: 400,
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ error: "Missing 'query' parameter" }),
-        headers: {
-          "Content-Type": "application/json",
-        },
       };
     }
 
@@ -20,18 +17,14 @@ exports.handler = async (event) => {
 
     return {
       statusCode: 200,
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(response.data),
-      headers: {
-        "Content-Type": "application/json",
-      },
     };
   } catch (error) {
     return {
       statusCode: 500,
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ error: error.message || "Internal Server Error" }),
-      headers: {
-        "Content-Type": "application/json",
-      },
     };
   }
 };
