@@ -1,27 +1,33 @@
 const axios = require("axios");
 
 exports.handler = async (event) => {
-  const id = event.queryStringParameters.id;
+  const { id } = event.queryStringParameters || {};
 
   if (!id) {
     return {
       statusCode: 400,
-      body: JSON.stringify({ message: "Missing id parameter" }),
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ error: "Missing 'id' parameter" }),
     };
   }
 
-  const url = `https://api.consumet.org/anime/animefox/info?id=${encodeURIComponent(id)}`;
+  const apiUrl = `https://api.consumet.org/anime/animepahe/info/${id}`;
 
   try {
-    const { data } = await axios.get(url);
+    const response = await axios.get(apiUrl);
+
     return {
       statusCode: 200,
-      body: JSON.stringify(data),
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(response.data),
     };
-  } catch (err) {
+  } catch (error) {
     return {
       statusCode: 500,
-      body: JSON.stringify({ message: err.message }),
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        error: error.response?.data || error.message || "Internal Server Error",
+      }),
     };
   }
 };
